@@ -1,0 +1,26 @@
+# Deploys the site to Vercel on every push to main.
+# Needs one repository secret: VERCEL_TOKEN (create it at https://vercel.com/account/tokens).
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  VERCEL_ORG_ID: team_qk4fcdiCWhhXna2ANcNGzs8O
+  VERCEL_PROJECT_ID: prj_Oj5vcNarSJiXAVVrOfakhXWvFGlf
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skip if token not set
+        if: env.VERCEL_TOKEN == ''
+        run: echo "VERCEL_TOKEN secret is not set yet; skipping deploy."
+      - name: Deploy
+        if: env.VERCEL_TOKEN != ''
+        run: npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
