@@ -5,88 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Jazner Pajarin — Automation & AI Specialist</title>
   <meta name="description" content="Jazner Pajarin builds CRM automations, AI agents and workflows that turn leads into booked calls on autopilot.">
-  <meta name="theme-color" content="#07090f">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2307090f'/><text x='50%' y='56%' text-anchor='middle' dominant-baseline='middle' font-family='monospace' font-weight='700' font-size='30' fill='%2300e5ff'>JP</text></svg>">
+  <meta name="theme-color" content="#05070c">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2305070c'/><text x='50%' y='56%' text-anchor='middle' dominant-baseline='middle' font-family='monospace' font-weight='700' font-size='30' fill='%2300e5ff'>JP</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <canvas id="grid-bg" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
 
+  <!-- NAV -->
   <header class="nav" id="top">
     <a href="#top" class="brand" aria-label="Jazner Pajarin home">
       <span class="brand-mark">JP</span>
-      <span class="brand-text">jazner<span class="accent">.dev</span></span>
+      <span class="brand-text mono">jazner<span class="accent">.ops</span></span>
     </a>
-    <nav class="nav-links" aria-label="Main">
-      <a href="#projects">Projects</a>
-      <a href="#services">Services</a>
-      <a href="#about">About</a>
-      <a href="#contact" class="btn btn-sm btn-ghost">Contact</a>
+    <nav class="nav-links mono" aria-label="Main">
+      <a href="#projects"><span>01</span>Work</a>
+      <a href="#services"><span>02</span>Services</a>
+      <a href="#about"><span>03</span>About</a>
+      <a href="#contact"><span>04</span>Contact</a>
     </nav>
+    <span class="nav-status mono"><span class="pulse"></span>online</span>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span>
     </button>
   </header>
-  <div class="mobile-menu" id="mobile-menu" hidden>
-    <a href="#projects">Projects</a>
-    <a href="#services">Services</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
+  <div class="mobile-menu mono" id="mobile-menu" hidden>
+    <a href="#projects"><span>01</span>Work</a>
+    <a href="#services"><span>02</span>Services</a>
+    <a href="#about"><span>03</span>About</a>
+    <a href="#contact"><span>04</span>Contact</a>
   </div>
 
   <main>
     <!-- HERO -->
     <section class="hero container">
       <div class="hero-copy">
-        <p class="status"><span class="pulse"></span> Available for new projects</p>
-        <h1>
-          <span class="hello mono">// hi, I'm</span>
-          Jazner Pajarin
+        <p class="hero-label mono">
+          <span class="bracket">[</span> Automation &amp; AI Specialist <span class="bracket">]</span>
+          <span class="hero-label-line"></span>
+        </p>
+        <h1 class="display">
+          <span class="line">Jazner</span>
+          <span class="line outline">Pajarin<span class="dot-accent">.</span></span>
         </h1>
         <p class="role mono">
-          <span class="prompt">&gt;</span> <span id="typed">Automation &amp; AI Specialist</span><span class="caret">_</span>
+          <span class="prompt">~$</span> <span id="typed">building workflows</span><span class="caret">▍</span>
         </p>
         <p class="lead">
-          I build systems that work while you sleep — CRM automations, AI agents and
-          workflows that turn every lead into a booked call, on autopilot.
+          Your <em>quiet operator behind the scenes.</em> I build CRM automations, AI agents and
+          workflows that catch every lead and move it to a booked call, without anyone lifting a finger.
         </p>
         <div class="hero-cta">
-          <a href="#projects" class="btn btn-primary">View my work</a>
-          <a href="#contact" class="btn btn-ghost">Let's talk</a>
+          <a href="#projects" class="btn btn-primary">View my work <span aria-hidden="true">→</span></a>
+          <a href="#contact" class="btn btn-ghost">Start a project</a>
         </div>
       </div>
 
-      <div class="terminal" aria-label="Profile summary">
-        <div class="terminal-bar">
-          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span class="terminal-title mono">~/jazner — zsh</span>
+      <!-- Live pipeline -->
+      <div class="pipeline hud" aria-label="Example automation pipeline">
+        <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <div class="pipeline-head mono">
+          <span><span class="pulse"></span> pipeline://new-lead</span>
+          <span class="badge">live demo</span>
         </div>
-        <pre class="terminal-body mono" id="terminal"><span class="t-prompt">$</span> whoami
-<span class="t-out">jazner_pajarin</span>
-<span class="t-prompt">$</span> cat focus.json
-<span class="t-out">{
-  <span class="t-key">"role"</span>: <span class="t-str">"Automation &amp; AI Specialist"</span>,
-  <span class="t-key">"builds"</span>: [<span class="t-str">"workflows"</span>, <span class="t-str">"AI agents"</span>, <span class="t-str">"funnels"</span>],
-  <span class="t-key">"motto"</span>: <span class="t-str">"Your quiet operator behind the scenes."</span>
-}</span>
-<span class="t-prompt">$</span> <span class="caret">▋</span></pre>
+        <ol class="flow">
+          <li class="node" style="--i:0">
+            <span class="node-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg></span>
+            <span class="node-text"><b>Lead comes in</b><small class="mono">form · ad · DM</small></span>
+            <span class="node-state mono">trigger</span>
+          </li>
+          <li class="node" style="--i:1">
+            <span class="node-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/></svg></span>
+            <span class="node-text"><b>Saved to CRM</b><small class="mono">tagged · pipeline stage</small></span>
+            <span class="node-state mono">0.4s</span>
+          </li>
+          <li class="node" style="--i:2">
+            <span class="node-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01"/></svg></span>
+            <span class="node-text"><b>AI agent qualifies</b><small class="mono">chat · sms · voice</small></span>
+            <span class="node-state mono">1.2s</span>
+          </li>
+          <li class="node" style="--i:3">
+            <span class="node-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></span>
+            <span class="node-text"><b>Call booked</b><small class="mono">calendar · reminders</small></span>
+            <span class="node-state mono done">✓ done</span>
+          </li>
+        </ol>
+        <div class="pipeline-foot mono">
+          <span>manual steps</span><span class="big">0</span>
+        </div>
       </div>
     </section>
 
-    <!-- STATS -->
-    <section class="container stats" aria-label="Highlights">
-      <div class="stat"><span class="stat-value mono">24/7</span><span class="stat-label">Systems that never clock out</span></div>
-      <div class="stat"><span class="stat-value mono">AI-first</span><span class="stat-label">Agents &amp; LLM workflows</span></div>
-      <div class="stat"><span class="stat-value mono">End-to-end</span><span class="stat-label">From lead capture to booking</span></div>
-      <div class="stat"><span class="stat-value mono">Remote</span><span class="stat-label">Working with clients worldwide</span></div>
+    <!-- METRICS -->
+    <section class="container metrics" aria-label="Highlights">
+      <div class="metric"><span class="metric-k mono">uptime</span><span class="metric-v">24/7</span><span class="metric-l">Systems that never clock out</span></div>
+      <div class="metric"><span class="metric-k mono">stack</span><span class="metric-v">AI-first</span><span class="metric-l">Agents &amp; LLM workflows</span></div>
+      <div class="metric"><span class="metric-k mono">scope</span><span class="metric-v">End-to-end</span><span class="metric-l">Lead capture → booked call</span></div>
+      <div class="metric"><span class="metric-k mono">location</span><span class="metric-v">Remote</span><span class="metric-l">Clients worldwide</span></div>
     </section>
 
     <!-- TOOLS MARQUEE -->
     <section class="tools" aria-label="Tools I work with">
-      <p class="eyebrow container mono">// stack &amp; tools</p>
       <div class="marquee">
         <div class="marquee-track" id="marquee"></div>
       </div>
@@ -95,96 +118,128 @@
     <!-- PROJECTS -->
     <section class="container section" id="projects">
       <div class="section-head">
-        <p class="eyebrow mono">01 / projects</p>
-        <h2>Things I've built</h2>
-        <p class="section-sub">Real systems, shipped. Open a card to walk through the work.</p>
+        <span class="section-num" aria-hidden="true">01</span>
+        <div>
+          <p class="eyebrow mono">// selected work</p>
+          <h2>Things I've built</h2>
+        </div>
+        <p class="section-sub">Real systems, shipped. Open a card to walk through the build.</p>
       </div>
-      <div class="filters" id="filters" role="tablist" aria-label="Filter projects"></div>
+      <div class="filters mono" id="filters" role="tablist" aria-label="Filter projects"></div>
       <div class="project-grid" id="project-grid"></div>
     </section>
 
     <!-- SERVICES -->
     <section class="container section" id="services">
       <div class="section-head">
-        <p class="eyebrow mono">02 / services</p>
-        <h2>Capture. Automate. Convert.</h2>
-        <p class="section-sub">What I can plug into your business.</p>
+        <span class="section-num" aria-hidden="true">02</span>
+        <div>
+          <p class="eyebrow mono">// services</p>
+          <h2>Capture. Automate. Convert.</h2>
+        </div>
+        <p class="section-sub">The systems I plug into your business.</p>
       </div>
-      <div class="services">
-        <article class="service">
-          <div class="service-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/><circle cx="18" cy="16" r="3"/></svg>
-          </div>
+      <div class="bento">
+        <article class="tile tile-lg spot">
+          <span class="tile-id mono">S-01</span>
           <h3>Workflow Automation</h3>
-          <p>Follow-ups, reminders, lead routing and pipelines that run themselves — no dropped leads.</p>
-        </article>
-        <article class="service">
-          <div class="service-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 15h6"/></svg>
+          <p>Follow-ups, reminders, lead routing and pipelines that run themselves. No more leads slipping through the cracks.</p>
+          <div class="mini-flow mono" aria-hidden="true">
+            <span>new lead</span><i></i><span>tag</span><i></i><span>sms</span><i></i><span>email</span><i></i><span class="ok">booked</span>
           </div>
+        </article>
+        <article class="tile spot">
+          <span class="tile-id mono">S-02</span>
+          <div class="tile-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 15h6"/></svg></div>
           <h3>AI Agents &amp; Chatbots</h3>
-          <p>Conversational and voice AI that qualifies leads, answers questions and books appointments.</p>
+          <p>Chat and voice AI that qualifies leads, answers questions and books appointments 24/7.</p>
         </article>
-        <article class="service">
-          <div class="service-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>
-          </div>
+        <article class="tile spot">
+          <span class="tile-id mono">S-03</span>
+          <div class="tile-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></div>
           <h3>Funnels &amp; Landing Pages</h3>
           <p>High-converting pages wired to forms, calendars and tracking from day one.</p>
         </article>
-        <article class="service">
-          <div class="service-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>
+        <article class="tile tile-wide spot">
+          <span class="tile-id mono">S-04</span>
+          <div class="tile-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.6 10.5l6.8-3M8.6 13.5l6.8 3"/></svg></div>
+          <div>
+            <h3>CRM Setup &amp; Integrations</h3>
+            <p>Clean pipelines, tags and custom fields, plus integrations that keep every tool talking to each other.</p>
           </div>
-          <h3>CRM Setup &amp; Integrations</h3>
-          <p>Clean pipelines, tags and fields, plus integrations that keep your tools talking to each other.</p>
         </article>
       </div>
     </section>
 
     <!-- ABOUT -->
-    <section class="container section about" id="about">
-      <div class="about-photo">
-        <img src="images/jazner.jpg" alt="Jazner Pajarin" loading="lazy">
-        <div class="ring"></div>
+    <section class="container section" id="about">
+      <div class="section-head">
+        <span class="section-num" aria-hidden="true">03</span>
+        <div>
+          <p class="eyebrow mono">// about</p>
+          <h2>The operator</h2>
+        </div>
       </div>
-      <div class="about-copy">
-        <p class="eyebrow mono">03 / about</p>
-        <h2>Hi, I'm Jazner.</h2>
-        <p>
-          I'm an Automation &amp; AI Specialist who helps coaches, agencies and small businesses
-          stop doing busywork by hand. I map out how leads move through your business, then build
-          the automations and AI agents that move them for you.
-        </p>
-        <p>
-          My approach is simple: understand the process, remove the friction, and ship a system
-          you can trust to run on its own.
-        </p>
-        <ul class="process mono">
-          <li><span>01</span> Map the process</li>
-          <li><span>02</span> Build &amp; automate</li>
-          <li><span>03</span> Test &amp; hand off</li>
-        </ul>
+      <div class="about">
+        <figure class="id-card hud">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <div class="id-photo">
+            <img src="images/jazner.jpg" alt="Jazner Pajarin" loading="lazy">
+            <span class="scan" aria-hidden="true"></span>
+          </div>
+          <figcaption class="id-meta mono">
+            <div><span>id</span><b>JP-001</b></div>
+            <div><span>name</span><b>Jazner Pajarin</b></div>
+            <div><span>role</span><b>Automation &amp; AI</b></div>
+            <div><span>status</span><b class="ok"><span class="pulse"></span> available</b></div>
+          </figcaption>
+        </figure>
+        <div class="about-copy">
+          <h3 class="about-hi">Hi, I'm Jazner.</h3>
+          <p>
+            I'm an Automation &amp; AI Specialist who helps coaches, agencies and small businesses
+            stop doing busywork by hand. I map out how leads move through your business, then build
+            the automations and AI agents that move them for you.
+          </p>
+          <p>
+            My approach is simple: understand the process, remove the friction, and ship a system
+            you can trust to run on its own.
+          </p>
+          <ol class="timeline">
+            <li><span class="mono">01</span><b>Map</b><small>Find where leads and hours leak.</small></li>
+            <li><span class="mono">02</span><b>Build</b><small>Workflows, agents and integrations.</small></li>
+            <li><span class="mono">03</span><b>Hand off</b><small>Tested, documented, yours.</small></li>
+          </ol>
+        </div>
       </div>
     </section>
 
     <!-- CONTACT -->
     <section class="container section" id="contact">
-      <div class="contact-card">
-        <p class="eyebrow mono">04 / contact</p>
-        <h2>Let's build something that runs itself.</h2>
-        <p class="section-sub">Have a process you're tired of doing by hand? Tell me about it.</p>
-        <div class="hero-cta center">
-          <a href="mailto:jazpajarin08@gmail.com" class="btn btn-primary">Email me</a>
-          <a href="https://www.linkedin.com/in/jaznerpajarin/" class="btn btn-ghost" target="_blank" rel="noopener">LinkedIn</a>
+      <div class="contact hud">
+        <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        <p class="eyebrow mono">// 04 — contact</p>
+        <h2 class="contact-title">Got a process you're <br>tired of doing <span class="grad">by hand?</span></h2>
+        <p class="section-sub">Tell me about it. I'll show you how it can run itself.</p>
+        <div class="contact-actions">
+          <button class="email-copy mono" data-email="jazpajarin08@gmail.com" aria-label="Copy email address">
+            <span class="email-text">jazpajarin08@gmail.com</span>
+            <span class="email-hint">copy</span>
+          </button>
+          <a href="mailto:jazpajarin08@gmail.com" class="btn btn-primary">Email me <span aria-hidden="true">→</span></a>
+          <a href="https://www.linkedin.com/in/jaznerpajarin/" class="btn btn-ghost" target="_blank" rel="noopener">LinkedIn ↗</a>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer container mono">
-    <span>© <span id="year"></span> Jazner Pajarin</span>
-    <span class="muted">Your quiet operator behind the scenes.</span>
+  <footer class="footer">
+    <div class="container footer-row mono">
+      <span>© <span id="year"></span> Jazner Pajarin</span>
+      <span class="muted">Your quiet operator behind the scenes.</span>
+      <a href="#top" class="muted">back to top ↑</a>
+    </div>
+    <div class="footer-word" aria-hidden="true">JAZNER</div>
   </footer>
 
   <!-- Project modal -->

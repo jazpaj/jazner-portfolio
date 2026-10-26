@@ -42,13 +42,13 @@ function renderProjects(category) {
       const index = PROJECTS.indexOf(p);
       const media = p.image
         ? `<img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy">`
-        : `<div class="ph"></div><span class="ph-label">${p.placeholder ? "coming soon" : "no preview"}</span>`;
+        : `<div class="ph"></div><span class="ph-label">${p.placeholder ? "awaiting deploy" : "no preview"}</span>`;
       return `
-        <button class="card reveal${p.placeholder ? " is-placeholder" : ""}" data-index="${index}">
-          <div class="card-media">${media}</div>
+        <button class="card spot reveal${p.placeholder ? " is-placeholder" : ""}" data-index="${index}">
+          <div class="card-media"><span class="card-num">P-${String(index + 1).padStart(2, "0")}</span>${media}</div>
           <div class="card-body">
             <span class="card-cat">${esc(p.category)}</span>
-            <h3>${esc(p.title)}</h3>
+            <h3>${esc(p.title)} <span class="arrow" aria-hidden="true">↗</span></h3>
             <p>${esc(p.summary)}</p>
             <div class="tags">${(p.tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>
           </div>
@@ -96,14 +96,38 @@ const observer = new IntersectionObserver(
   }),
   { threshold: 0.12 }
 );
-document.querySelectorAll(".section-head, .service, .about-photo, .about-copy, .contact-card, .stats")
+document.querySelectorAll(".section-head, .tile, .id-card, .about-copy, .contact, .metrics, .pipeline")
   .forEach((el) => { el.classList.add("reveal"); observer.observe(el); });
+
+// Cursor spotlight on cards and tiles
+document.addEventListener("pointermove", (e) => {
+  const el = e.target.closest?.(".spot");
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+  el.style.setProperty("--my", `${e.clientY - r.top}px`);
+});
+
+// Copy email to clipboard
+const emailBtn = document.querySelector(".email-copy");
+emailBtn.addEventListener("click", async () => {
+  const hint = emailBtn.querySelector(".email-hint");
+  try {
+    await navigator.clipboard.writeText(emailBtn.dataset.email);
+    hint.textContent = "copied ✓";
+  } catch {
+    window.location.href = `mailto:${emailBtn.dataset.email}`;
+    return;
+  }
+  emailBtn.classList.add("copied");
+  setTimeout(() => { hint.textContent = "copy"; emailBtn.classList.remove("copied"); }, 1800);
+});
 
 renderFilters();
 renderProjects("All");
 
 // Typed role rotation
-const roles = ["Automation & AI Specialist", "Workflow Builder", "AI Agent Developer", "CRM Architect"];
+const roles = ["building workflows", "training AI agents", "wiring up CRMs", "booking your calls"];
 const typed = document.getElementById("typed");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 if (!reduceMotion) {
