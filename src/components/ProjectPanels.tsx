@@ -1,11 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Ticket, Robot, FlowArrow, type Icon } from '@/components/slab'
+import { Ticket, Robot, FlowArrow, ArrowUpRight, Eye, type Icon } from '@/components/slab'
 import { lazy, Suspense } from 'react'
 import WorkflowSamples from './WorkflowSamples'
 import AIStackGrid from './AIStackGrid'
 import { AppsSection } from './Projects'
 import { useFunnelModal } from './FunnelModal'
-import { websiteFunnel } from '@/data/funnels'
+import { ghlSites, vibeSites, liveSites, type Funnel } from '@/data/funnels'
 
 const FunnelBarrel = lazy(() => import('./FunnelBarrel'))
 
@@ -44,17 +44,64 @@ function SectionWindow({ label, children }: { label: string; children: ReactNode
   )
 }
 
-/** Only the barrel, spinning on the backdrop. Its own page preview still
- *  stacks above (z 9000). */
+const SITE_GROUPS = [
+  { title: 'GoHighLevel websites & landing pages', sub: 'Built and launched inside GoHighLevel, wired to forms, calendars and the CRM.', sites: ghlSites },
+  { title: 'Vibe-coded websites', sub: 'Custom sites I coded with AI tools, from first commit to launch.', sites: vibeSites },
+]
+
+function SiteCard({ site, onOpen }: { site: Funnel; onOpen: (f: Funnel, t?: HTMLElement | null) => void }) {
+  return (
+    <li className="sitecard">
+      <button type="button" className="sitecard__shot" onClick={(e) => onOpen(site, e.currentTarget)} aria-label={`Preview ${site.label}`}>
+        <img src={`/sites/thumbs/${site.file.replace('.html', '.jpeg')}`} alt="" loading="lazy" decoding="async" />
+        <span className="sitecard__peek" aria-hidden="true">
+          <Eye size={16} weight="bold" />
+          Preview
+        </span>
+      </button>
+      <div className="sitecard__body">
+        <span className="sitecard__tag" data-tag={site.tag}>{site.tag}</span>
+        <h4 className="sitecard__title">{site.label}</h4>
+        <p className="sitecard__kind">{site.kind}</p>
+        {site.url && (
+          <a className="sitecard__visit" href={site.url} target="_blank" rel="noopener noreferrer">
+            {new URL(site.url).host.replace(/^www\./, '')}
+            <ArrowUpRight size={13} weight="bold" aria-hidden="true" />
+          </a>
+        )}
+      </div>
+    </li>
+  )
+}
+
+/** The live client sites: the barrel to spin, then every site as a card,
+ *  grouped by how it was built. */
 export function BarrelPanel() {
   const { openFull, modal } = useFunnelModal()
   return (
-    <div className="ppanel ppanel--barrel">
-      <Suspense fallback={<div className="funnels__barrel-skeleton" aria-hidden="true" />}>
-        <FunnelBarrel funnels={websiteFunnel} onOpen={openFull} />
-      </Suspense>
+    <SectionWindow label="Websites I've built">
+      <div className="sites">
+        <div className="sites__barrel">
+          <Suspense fallback={<div className="funnels__barrel-skeleton" aria-hidden="true" />}>
+            <FunnelBarrel funnels={liveSites} onOpen={openFull} />
+          </Suspense>
+        </div>
+        {SITE_GROUPS.map((g) => (
+          <section key={g.title} className="sites__group">
+            <header className="sites__head">
+              <h3 className="sites__title">{g.title}</h3>
+              <p className="sites__sub">{g.sub}</p>
+            </header>
+            <ul className="sites__grid" role="list">
+              {g.sites.map((site) => (
+                <SiteCard key={site.file} site={site} onOpen={openFull} />
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
       {modal}
-    </div>
+    </SectionWindow>
   )
 }
 

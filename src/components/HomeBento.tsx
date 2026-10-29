@@ -17,9 +17,9 @@ import {
   MapTrifold,
   Wrench,
   HandWaving,
-  Rocket,
 } from '@/components/slab'
 import { aiStack, type StackNode } from '@/data/ai-stack'
+import { liveSites } from '@/data/funnels'
 import { profile } from '@/data/profile'
 
 /**
@@ -30,6 +30,9 @@ import { profile } from '@/data/profile'
  * Motion is transform-only on a clipped inner track, so a card never adds
  * height and Home stays a single viewport.
  */
+
+// The live sites drifting up the Projects card.
+const PROJECT_SHOTS = liveSites
 
 const OFFERS = [
   { Icon: Gear, title: 'Workflow Automation', note: 'Follow-ups and routing that run themselves' },
@@ -85,17 +88,15 @@ export default function HomeBento() {
     <nav className="bento" aria-label="Explore the portfolio">
       {/* Projects: the funnel thumbnails drift upward on a looped track. */}
       <Link to="/projects" className="bento__card bento__card--projects">
-        <CardHead Icon={FolderOpen} title="Projects" desc="Automations, AI agents and funnels I have built." />
-        {/* Coming-soon badge until real project screenshots exist; the
-            template's scrolling screenshot reel can replace it then. */}
-        <div className="bento__media bento__badge" aria-hidden="true">
-          <span className="bento__badge-ring">
-            <Rocket size={40} weight="duotone" />
-          </span>
-          <span className="bento__badge-tag">
-            <SealCheck size={14} weight="fill" />
-            New builds landing soon
-          </span>
+        <CardHead Icon={FolderOpen} title="Projects" desc="Live client websites, automations and AI agents." />
+        <div className="bento__media bento__reel" aria-hidden="true">
+          <div className="bento__reel-track">
+            {[...PROJECT_SHOTS, ...PROJECT_SHOTS].map((f, i) => (
+              <span key={i} className="bento__shot">
+                <img src={`/home/sites-${f.file.replace('.html', '.jpeg')}`} alt="" loading="lazy" decoding="async" />
+              </span>
+            ))}
+          </div>
         </div>
       </Link>
 

@@ -1,4 +1,4 @@
-export type FunnelTag = 'Lead Capture' | 'Booking' | 'Checkout' | 'Website'
+export type FunnelTag = 'Lead Capture' | 'Booking' | 'Checkout' | 'Website' | 'GHL Build' | 'Vibe-Coded'
 
 export type Funnel = {
   file: string
@@ -6,7 +6,12 @@ export type Funnel = {
   tag: FunnelTag
   desc: string
   /** Public subfolder the HTML + thumbnail live under. Default 'funnels'. */
-  dir?: 'funnels' | 'samples'
+  dir?: 'funnels' | 'samples' | 'sites'
+  /** Live site. When set, the preview shows the full-page screenshot from
+   *  public/sites/full/ with a link out, instead of iframing local HTML. */
+  url?: string
+  /** What the client does, shown under the site name. */
+  kind?: string
 }
 
 /**
@@ -18,13 +23,13 @@ export type Funnel = {
  * `node scripts/make-thumbs.mjs` to render its thumbnails.
  */
 
-const FUNNEL_DESC: Record<Exclude<FunnelTag, 'Website'>, string> = {
+const FUNNEL_DESC: Record<'Lead Capture' | 'Booking' | 'Checkout', string> = {
   'Lead Capture': 'An opt-in page that captures the lead and sends it straight into the CRM and follow-up.',
   Booking: 'A booking page wired to the calendar, with confirmations and reminders after.',
   Checkout: 'A checkout page connected to the CRM, so every purchase is tagged and followed up.',
 }
 
-const funnel = (n: string, tag: Exclude<FunnelTag, 'Website'>): Funnel => ({
+const funnel = (n: string, tag: 'Lead Capture' | 'Booking' | 'Checkout'): Funnel => ({
   file: `placeholder-funnel-${n}.html`,
   label: `${tag} page ${n}`,
   tag,
@@ -54,6 +59,37 @@ export const bookingFunnel: Funnel[] = [
 export const websiteFunnel: Funnel[] = ['01', '02', '03', '04', '05', '06'].map(site)
 
 /**
+ * Live client sites. Screenshots come from `node scripts/shoot-sites.mjs`
+ * (URLs in scripts/sites.json); `file` is the slug the thumbnails are named by.
+ */
+const live = (slug: string, label: string, kind: string, url: string, tag: 'GHL Build' | 'Vibe-Coded', desc: string): Funnel => ({
+  file: `${slug}.html`,
+  label,
+  kind,
+  url,
+  tag,
+  desc,
+  dir: 'sites',
+})
+
+export const ghlSites: Funnel[] = [
+  live('mylocksmith365', 'My Locksmith 365', 'Locksmith · Peoria, AZ', 'https://mylocksmith365.com/', 'GHL Build', 'A local locksmith site built in GoHighLevel, with call-now and emergency lockout paths up front.'),
+  live('aleksandrazuraw', 'Aleksandra Zuraw', 'Digital pathology educator', 'https://www.aleksandrazuraw.com/', 'GHL Build', 'A personal brand site for a digital pathology educator, built in GoHighLevel.'),
+  live('ghl-preview-w6oxo', 'Arise Construction', 'Hardscape & remodeling · Phoenix, AZ', 'https://sites.leadconnectorhq.com/preview/W6OXOhEqVzFpkJIHt1St', 'GHL Build', 'A GoHighLevel site for a Phoenix hardscape, remodeling and restoration company.'),
+  live('yokedstaff', 'Yoked Staff', 'Virtual assistant agency', 'https://yokedstaff.com/', 'GHL Build', 'A GoHighLevel site for a virtual assistant staffing agency.'),
+  live('ghl-preview-5y8aq', 'Fortress Cargo Trailers', 'Cargo trailer dealer', 'https://sites.leadconnectorhq.com/preview/5y8AqzRG8MYyWtXw5iX4', 'GHL Build', 'A GoHighLevel site for a cargo trailer builder, with trailer listings and quote requests.'),
+  live('wades-septic', "Wade's Septic", 'Septic services · Jesup, GA', 'https://wades-septic.com/home', 'GHL Build', 'A GoHighLevel site for a septic service company, built around service areas and booking.'),
+]
+
+export const vibeSites: Funnel[] = [
+  live('ariseconstructionphx', 'Arise Construction', 'General contractor · Phoenix, AZ', 'https://www.ariseconstructionphx.com/', 'Vibe-Coded', 'A custom-coded site for a licensed Arizona general contractor.'),
+  live('kidsetoys', 'Kidse Toys', 'Toy shop · e-commerce', 'https://www.kidsetoys.com/', 'Vibe-Coded', 'A custom-coded storefront for a squishy and plush toy shop.'),
+  live('afterscrollstudio', 'Afterscroll Studio', 'Creative growth agency', 'https://afterscrollstudio.com/', 'Vibe-Coded', 'A custom-coded site for a creative growth agency.'),
+]
+
+export const liveSites: Funnel[] = [...ghlSites, ...vibeSites]
+
+/**
  * Tag -> color map. Brand-external colors that identify the page type, passed
  * to CSS via an inline --tag-color custom property.
  */
@@ -61,5 +97,7 @@ export const tagColors: Record<FunnelTag, string> = {
   'Lead Capture': '#8b5cf6',
   Booking: '#ec4899',
   Checkout: '#f59e0b',
-  Website: '#FF7A1A',
+  Website: '#00E5FF',
+  'GHL Build': '#00E5FF',
+  'Vibe-Coded': '#8B5CF6',
 }

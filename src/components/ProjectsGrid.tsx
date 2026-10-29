@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { ArrowUpRight, X, Ticket, Robot, FlowArrow, CursorClick } from '@/components/slab'
 import { FlowIcon, PlanIcon, GlobeIcon, SparkIcon, DeviceIcon } from './ProjectIcons'
 import { AutomationsPanel, PlanPanel, TicketingPanel, FrameworkPanel, WorkflowPanel, BarrelPanel, AIWindow, AppsWindow } from './ProjectPanels'
-import { gymFunnel, bookingFunnel, websiteFunnel, type Funnel } from '@/data/funnels'
+import { liveSites, type Funnel } from '@/data/funnels'
 import { mobileApps } from '@/data/projects'
 import { aiStack, type StackNode } from '@/data/ai-stack'
 import { useIsPhone } from '@/hooks/useMediaQuery'
@@ -55,7 +55,7 @@ const WF_SHOTS = ['project-1.jpg', 'project-2.jpg', 'project-3.jpg', 'project-4.
   (f) => `/placeholders/${f}`,
 )
 
-const FUNNEL_SHOTS = [gymFunnel[0], bookingFunnel[0], websiteFunnel[0]].filter(Boolean)
+const FUNNEL_SHOTS = [liveSites[0], liveSites[7], liveSites[4]].filter(Boolean)
 const thumbSrc = (f: Funnel) => `/${f.dir ?? 'funnels'}/thumbs/${f.file.replace('.html', '.jpeg')}`
 
 const APP_SHOTS = [
@@ -160,7 +160,7 @@ function AppsPreview() {
 const PROJECTS: Project[] = [
   { id: 'workflows', cat: 'work', index: '01', title: 'Automation workflows', desc: 'A look at the kind of workflows and pipelines I build in GoHighLevel.', Icon: FlowIcon, logos: [GHL], eyebrow: 'Screenshots', Section: AutomationsPanel, span: 2, Preview: WorkflowsPreview },
   { id: 'plan', cat: 'work', index: '02', title: 'Sample build plan', desc: 'The kind of plan I write before a build: the process mapped, the gaps found, the fix laid out.', Icon: PlanIcon, logos: [GHL], eyebrow: 'Sample document', Section: PlanPanel, Preview: PlanPreview },
-  { id: 'funnels', cat: 'sites', index: '06', title: 'Pages and sites', desc: 'Funnels and landing pages wired to forms, calendars and tracking. Spin the reel.', Icon: GlobeIcon, logos: [GHL], eyebrow: 'Pages and sites', Section: BarrelPanel, Preview: FunnelsPreview },
+  { id: 'funnels', cat: 'sites', index: '06', title: "Websites I've built", desc: '9 live client sites: 6 built in GoHighLevel, 3 vibe-coded. Open to browse them.', Icon: GlobeIcon, logos: [GHL], eyebrow: 'Live websites', Section: BarrelPanel, Preview: FunnelsPreview },
   { id: 'ai', cat: 'ai', index: '07', title: 'Systems I build', desc: 'AI agents, workflows and integrations, grouped by what they do.', Icon: SparkIcon, logos: [CLAUDE_CODE, OPENAI, GHL], eyebrow: 'Systems', Section: AIWindow, Preview: AIPreview },
   { id: 'apps', cat: 'apps', index: '08', title: 'Systems and integrations', desc: 'Lead systems, AI agents and the integrations that connect them. Project details coming soon.', Icon: DeviceIcon, logos: [GHL, ZAPIER, N8N], eyebrow: 'Systems and integrations', Section: AppsWindow, span: 2, Preview: AppsPreview },
 ]
