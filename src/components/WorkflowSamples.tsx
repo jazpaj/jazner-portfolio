@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from '@/components/slab'
+import { SAMPLES, thumbOf, type Sample } from '@/data/workflows'
 
 /**
  * WorkflowSamples
  *
  * A horizontally scrolling marquee of project screenshots. The strip loops
  * seamlessly; clicking any frame opens the full image in a faux macOS window
- * over the page. Swap the images in SAMPLES for your own.
+ * over the page. Add more workflows to SAMPLES.
  *
  * Marquee: the list is duplicated so the CSS keyframe can translate -50% and
  * land the reset on a seamless seam. The track pauses on hover/focus so frames
@@ -19,26 +20,20 @@ import { X } from '@/components/slab'
  * the trigger on close - the same pattern as the other in-page previews.
  */
 
-type Sample = { file: string; label: string }
-
-const SAMPLES: Sample[] = [
-  { file: 'project-1.jpg', label: 'Workflow sample 1' },
-  { file: 'project-2.jpg', label: 'Workflow sample 2' },
-  { file: 'project-3.jpg', label: 'Workflow sample 3' },
-  { file: 'project-4.jpg', label: 'Workflow sample 4' },
-]
-
-const srcOf = (s: Sample) => `/placeholders/${encodeURIComponent(s.file)}`
+const srcOf = (s: Sample) => `/workflows/full/${s.file}.webp`
 
 export default function WorkflowSamples() {
   const doubled = useMemo(() => [...SAMPLES, ...SAMPLES], [])
 
   const [active, setActive] = useState<Sample | null>(null)
+  // Big workflows are unreadable fitted to the window; a click shows them 1:1.
+  const [zoomed, setZoomed] = useState(false)
   const lastTriggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement | null>(null)
 
   const open = useCallback((s: Sample, trigger: HTMLElement | null) => {
     lastTriggerRef.current = trigger ?? (document.activeElement as HTMLElement | null)
+    setZoomed(false)
     setActive(s)
   }, [])
 
@@ -64,7 +59,7 @@ export default function WorkflowSamples() {
   return (
     <section className="wfs" id="workflow-samples" aria-labelledby="wfs-heading" data-reveal>
       <p className="wfs__caption" id="wfs-heading">
-        Samples of the workflows and pipelines I build. Real project screens coming soon.
+        Real GoHighLevel workflows I have built. Click any one to see it full size.
       </p>
 
       <div className="wfs__strip">
@@ -88,8 +83,8 @@ export default function WorkflowSamples() {
                 </span>
                 <img
                   className="wfs__img"
-                  src={srcOf(s)}
-                  alt={clone ? '' : `${s.label} screenshot`}
+                  src={thumbOf(s)}
+                  alt={clone ? '' : `${s.label} workflow`}
                   loading="lazy"
                   decoding="async"
                 />
@@ -128,8 +123,17 @@ export default function WorkflowSamples() {
                   <X weight="bold" size={18} aria-hidden="true" />
                 </button>
               </div>
-              <div className="wfs__imgwrap">
-                <img className="wfs__full" src={srcOf(active)} alt={`${active.label} screenshot`} />
+              <p className="wfs__desc">{active.desc}</p>
+              <div className={`wfs__imgwrap${zoomed ? ' is-zoomed' : ''}`}>
+                <button
+                  type="button"
+                  className="wfs__zoom"
+                  onClick={() => setZoomed((z) => !z)}
+                  aria-pressed={zoomed}
+                  aria-label={zoomed ? 'Fit to window' : 'Zoom to full size'}
+                >
+                  <img className="wfs__full" src={srcOf(active)} alt={`${active.label} workflow`} />
+                </button>
               </div>
             </div>
           </div>,
