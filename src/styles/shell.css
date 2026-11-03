@@ -6,9 +6,7 @@
    box exactly, so it does not scroll at all.
 
    Consequence worth remembering: every scroll read has to go through
-   `#main-content`, never the window. Lenis is constructed with
-   wrapper/content and ScrollTrigger gets `scroller` defaults - see
-   useLenis.ts and useScrollFX.ts.
+   `#main-content`, never the window.
 
    Below 1100px the shell dissolves: the rail is hidden, NavBar's floating
    pill is the navigation and the document scrolls natively. A 1000px-wide

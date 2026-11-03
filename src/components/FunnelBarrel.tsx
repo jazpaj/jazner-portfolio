@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import type { Funnel } from '@/data/funnels'
+import { smallThumbSrc, type Funnel } from '@/data/funnels'
 
 /**
  * FunnelBarrel - the "dialect barrel gallery" technique.
@@ -20,11 +20,6 @@ import type { Funnel } from '@/data/funnels'
 type Props = {
   funnels: Funnel[]
   onOpen: (funnel: Funnel, trigger?: HTMLElement | null) => void
-}
-
-function thumbSrc(f: Funnel) {
-  const dir = f.dir ?? 'funnels'
-  return `/${dir}/thumbs/${f.file.replace('.html', '.jpeg')}`
 }
 
 export default function FunnelBarrel({ funnels, onOpen }: Props) {
@@ -172,7 +167,7 @@ export default function FunnelBarrel({ funnels, onOpen }: Props) {
         })
         material.userData.base = 1
         mats[counter] = material
-        material.map = loadTex(thumbSrc(funnel), counter)
+        material.map = loadTex(smallThumbSrc(funnel), counter)
         const mesh = new THREE.Mesh(sharedGeo, material)
         const baseAngle = c * anglePer + (r % 2 ? anglePer * 0.5 : 0) // brick offset
         mesh.rotation.y = baseAngle

@@ -50,7 +50,7 @@ const STEPS = [
 ]
 
 // Photos fanned on the About card. Add more of your own to vary the stack.
-const PHOTOS = [profile.avatarSrc, `${profile.avatarSrc}?2`, `${profile.avatarSrc}?3`]
+const PHOTOS = [profile.avatarSrc, profile.avatarSrc, profile.avatarSrc]
 
 /** The AI systems as a flat list: every leaf of the Projects tree, in order. */
 const leaves = (n: StackNode): StackNode[] =>
@@ -105,7 +105,7 @@ export default function HomeBento() {
         <CardHead Icon={User} title="About" desc="Your quiet operator behind the scenes." />
         <div className="bento__media bento__fan" aria-hidden="true">
           {PHOTOS.map((src, i) => (
-            <span key={src} className="bento__photo" style={{ ['--i' as string]: i }}>
+            <span key={i} className="bento__photo" style={{ ['--i' as string]: i }}>
               <img src={src} alt="" loading="lazy" decoding="async" />
             </span>
           ))}

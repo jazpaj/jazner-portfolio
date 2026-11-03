@@ -3,11 +3,13 @@ import { createPortal } from 'react-dom'
 import { ArrowUpRight, X, Ticket, Robot, FlowArrow, CursorClick } from '@/components/slab'
 import { FlowIcon, PlanIcon, GlobeIcon, SparkIcon, DeviceIcon } from './ProjectIcons'
 import { AutomationsPanel, PlanPanel, TicketingPanel, FrameworkPanel, WorkflowPanel, BarrelPanel, AIWindow, AppsWindow } from './ProjectPanels'
-import { liveSites, type Funnel } from '@/data/funnels'
+import { liveSites, smallThumbSrc } from '@/data/funnels'
 import { SAMPLES as WF_SAMPLES, thumbOf as wfThumb } from '@/data/workflows'
 import { mobileApps } from '@/data/projects'
 import { aiStack, type StackNode } from '@/data/ai-stack'
 import { useIsPhone } from '@/hooks/useMediaQuery'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useScrollLock } from '@/hooks/useScrollLock'
 
 /**
  * Projects, as one viewport in Home's bento language: a glass panel of six
@@ -18,6 +20,14 @@ import { useIsPhone } from '@/hooks/useMediaQuery'
  * The dialog is a portal at z 8000, under the funnel preview (9000) so the
  * barrel's own "open this page" dialog can still stack on top of it.
  */
+
+/**
+ * Cards marked `draft` still show template content (a sample document, images
+ * that read PLACEHOLDER), so they stay out of the grid. Set this to true, or
+ * drop `draft` from a card, once it has real content.
+ */
+const SHOW_DRAFTS: boolean = false
+
 type Project = {
   id: string
   index: string
@@ -34,6 +44,8 @@ type Project = {
   Preview: ComponentType
   /** Phone filter bucket. */
   cat: Cat
+  /** Template content: hidden unless SHOW_DRAFTS is on. */
+  draft?: true
 }
 
 type Cat = 'work' | 'sites' | 'apps' | 'ai'
@@ -55,7 +67,6 @@ const ZAPIER = '/icons/ai/zapier.svg'
 const WF_SHOTS = WF_SAMPLES.map(wfThumb)
 
 const FUNNEL_SHOTS = [liveSites[0], liveSites[7], liveSites[4]].filter(Boolean)
-const thumbSrc = (f: Funnel) => `/${f.dir ?? 'funnels'}/thumbs/${f.file.replace('.html', '.jpeg')}`
 
 const APP_SHOTS = [
   ...mobileApps.map((a) => a.imageSrc).filter((s): s is string => !!s),
@@ -66,9 +77,9 @@ const APP_SHOTS = [
 /** The three featured builds: each its own card in the stack, each its own
  *  pop-up. */
 const BUILDS: Project[] = [
-  { id: 'ticketing', cat: 'work', index: '03', kicker: 'CRM automation', title: 'Lead-to-booking automation', desc: 'A GoHighLevel system that captures a lead, follows up by email and SMS, and gets them booked onto the calendar.', Icon: () => <Ticket size={20} weight="duotone" />, logos: [GHL], eyebrow: 'Featured build', Section: TicketingPanel, Preview: () => null },
-  { id: 'framework', cat: 'ai', index: '04', kicker: 'AI agent', title: 'Lead qualifying chat agent', desc: 'An AI agent that answers questions, asks the qualifying questions, and books the call when the lead is a fit.', Icon: () => <Robot size={20} weight="duotone" />, logos: [OPENAI], eyebrow: 'Featured build', Section: FrameworkPanel, Preview: () => null },
-  { id: 'workflow', cat: 'ai', index: '05', kicker: 'Workflow automation', title: 'Reminder and follow-up workflows', desc: 'Appointment reminders, no-show follow-ups and lead routing that run in the background, tested end to end.', Icon: () => <FlowArrow size={20} weight="duotone" />, logos: [N8N, ZAPIER], eyebrow: 'Featured build', Section: WorkflowPanel, Preview: () => null },
+  { id: 'ticketing', draft: true, cat: 'work', index: '03', kicker: 'CRM automation', title: 'Lead-to-booking automation', desc: 'A GoHighLevel system that captures a lead, follows up by email and SMS, and gets them booked onto the calendar.', Icon: () => <Ticket size={20} weight="duotone" />, logos: [GHL], eyebrow: 'Featured build', Section: TicketingPanel, Preview: () => null },
+  { id: 'framework', draft: true, cat: 'ai', index: '04', kicker: 'AI agent', title: 'Lead qualifying chat agent', desc: 'An AI agent that answers questions, asks the qualifying questions, and books the call when the lead is a fit.', Icon: () => <Robot size={20} weight="duotone" />, logos: [OPENAI], eyebrow: 'Featured build', Section: FrameworkPanel, Preview: () => null },
+  { id: 'workflow', draft: true, cat: 'ai', index: '05', kicker: 'Workflow automation', title: 'Reminder and follow-up workflows', desc: 'Appointment reminders, no-show follow-ups and lead routing that run in the background, tested end to end.', Icon: () => <FlowArrow size={20} weight="duotone" />, logos: [N8N, ZAPIER], eyebrow: 'Featured build', Section: WorkflowPanel, Preview: () => null },
 ]
 
 const leaves = (n: StackNode): StackNode[] => (n.children?.length ? n.children.flatMap(leaves) : [n])
@@ -114,7 +125,7 @@ function FunnelsPreview() {
     <div className="bento__media bento__fan" aria-hidden="true">
       {FUNNEL_SHOTS.map((f, i) => (
         <span key={f.file} className="bento__photo bento__photo--page" style={{ ['--i' as string]: i }}>
-          <img src={thumbSrc(f)} alt="" loading="lazy" decoding="async" />
+          <img src={smallThumbSrc(f)} alt="" loading="lazy" decoding="async" />
         </span>
       ))}
     </div>
@@ -158,11 +169,17 @@ function AppsPreview() {
 
 const PROJECTS: Project[] = [
   { id: 'workflows', cat: 'work', index: '01', title: 'Automation workflows', desc: '5 real GoHighLevel workflows: Voice AI call routing, missed-call text-back and pipeline syncs.', Icon: FlowIcon, logos: [GHL], eyebrow: 'GoHighLevel workflows', Section: AutomationsPanel, span: 2, Preview: WorkflowsPreview },
-  { id: 'plan', cat: 'work', index: '02', title: 'Sample build plan', desc: 'The kind of plan I write before a build: the process mapped, the gaps found, the fix laid out.', Icon: PlanIcon, logos: [GHL], eyebrow: 'Sample document', Section: PlanPanel, Preview: PlanPreview },
+  { id: 'plan', draft: true, cat: 'work', index: '02', title: 'Sample build plan', desc: 'The kind of plan I write before a build: the process mapped, the gaps found, the fix laid out.', Icon: PlanIcon, logos: [GHL], eyebrow: 'Sample document', Section: PlanPanel, Preview: PlanPreview },
   { id: 'funnels', cat: 'sites', index: '06', title: "Websites I've built", desc: '9 live client sites: 6 built in GoHighLevel, 3 vibe-coded. Open to browse them.', Icon: GlobeIcon, logos: [GHL], eyebrow: 'Live websites', Section: BarrelPanel, Preview: FunnelsPreview },
   { id: 'ai', cat: 'ai', index: '07', title: 'Systems I build', desc: 'AI agents, workflows and integrations, grouped by what they do.', Icon: SparkIcon, logos: [CLAUDE_CODE, OPENAI, GHL], eyebrow: 'Systems', Section: AIWindow, Preview: AIPreview },
-  { id: 'apps', cat: 'apps', index: '08', title: 'Systems and integrations', desc: 'Lead systems, AI agents and the integrations that connect them. Project details coming soon.', Icon: DeviceIcon, logos: [GHL, ZAPIER, N8N], eyebrow: 'Systems and integrations', Section: AppsWindow, span: 2, Preview: AppsPreview },
+  { id: 'apps', draft: true, cat: 'apps', index: '08', title: 'Systems and integrations', desc: 'Lead systems, AI agents and the integrations that connect them. Project details coming soon.', Icon: DeviceIcon, logos: [GHL, ZAPIER, N8N], eyebrow: 'Systems and integrations', Section: AppsWindow, span: 2, Preview: AppsPreview },
 ]
+
+const isShown = (p: Project) => SHOW_DRAFTS || !p.draft
+const SHOWN_PROJECTS = PROJECTS.filter(isShown)
+const SHOWN_BUILDS = BUILDS.filter(isShown)
+// A filter with nothing behind it would open on an empty grid.
+const SHOWN_FILTERS = FILTERS.filter((f) => f.key === 'all' || [...SHOWN_PROJECTS, ...SHOWN_BUILDS].some((p) => p.cat === f.key))
 
 /** The icon tile, or the real marks stacked horizontally in its place. */
 function Marks({ p, size = 22 }: { p: Project; size?: number }) {
@@ -189,22 +206,24 @@ function Marks({ p, size = 22 }: { p: Project; size?: number }) {
    header: each Section brings its own window (or, for the strip, none). */
 function ProjectModal({ project, onClose, children }: { project: Project; onClose: () => void; children: ReactNode }) {
   const closeRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(dialogRef, true)
+  useScrollLock(true)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
     requestAnimationFrame(() => closeRef.current?.focus())
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
     }
   }, [onClose])
 
   return createPortal(
     <div
+      ref={dialogRef}
       className="pmodal"
       role="dialog"
       aria-modal="true"
@@ -229,8 +248,8 @@ export default function ProjectsGrid() {
   const phone = useIsPhone()
   const [cat, setCat] = useState<Cat | 'all'>('all')
   const keep = (p: Project) => !phone || cat === 'all' || p.cat === cat
-  const projects = PROJECTS.filter(keep)
-  const builds = BUILDS.filter(keep)
+  const projects = SHOWN_PROJECTS.filter(keep)
+  const builds = SHOWN_BUILDS.filter(keep)
   const triggerRef = useRef<HTMLElement | null>(null)
 
   const show = useCallback((p: Project, el: HTMLElement) => {
@@ -302,7 +321,7 @@ export default function ProjectsGrid() {
 
       {phone && (
         <div className="pfilter" role="group" aria-label="Filter projects">
-          {FILTERS.map((f) => (
+          {SHOWN_FILTERS.map((f) => (
             <button
               key={f.key}
               type="button"
@@ -323,7 +342,7 @@ export default function ProjectsGrid() {
           <CursorClick size={14} weight="duotone" />
           Click a card to open it
         </span>
-        <div className="bento bento--projects">
+        <div className={`bento bento--projects${SHOW_DRAFTS ? '' : ' bento--projects-trim'}`}>
           {projects.map((p) => (
             <Fragment key={p.id}>
             <button

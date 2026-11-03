@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react'
+import { flushSync } from 'react-dom'
 import { PaperPlaneTilt, CheckCircle, WarningCircle, EnvelopeSimple, ArrowUpRight, CaretDown } from '@/components/slab'
 import { FAQS } from '@/data/faqs'
 import { profile } from '@/data/profile'
-import { readLead, submitLead, SubmitError, MAX_NAME, MAX_EMAIL, MAX_MESSAGE, type SubmitResult } from '@/lib/contact'
+import { readLead, invalidFields, submitLead, SubmitError, MAX_NAME, MAX_EMAIL, MAX_MESSAGE, type LeadField, type SubmitResult } from '@/lib/contact'
 
 /**
  * ContactGrid - the Contact view as a fixed viewport.
@@ -26,22 +27,35 @@ const FLIGHT_MS = 650
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
+const ERROR_ID = 'contact-error'
+
 export default function ContactGrid() {
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   // Bumped on every failed submit so the shake replays even if the same
   // error is already showing.
   const [shake, setShake] = useState(0)
+  const [invalid, setInvalid] = useState<LeadField[]>([])
   // One question open at a time so the plate never grows past the form.
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const lead = readLead(new FormData(e.currentTarget))
+    const form = e.currentTarget
+    const data = new FormData(form)
+    const lead = readLead(data)
     if (!lead) {
-      setStatus({ kind: 'error', note: 'Add your name, a real email, and a short note.' })
-      setShake((n) => n + 1)
+      const bad = invalidFields(data)
+      // Commit first, so the field is already marked invalid and described by
+      // the note when focus lands on it and a screen reader announces it.
+      flushSync(() => {
+        setInvalid(bad)
+        setStatus({ kind: 'error', note: 'Add your name, a real email, and a short note.' })
+        setShake((n) => n + 1)
+      })
+      form.querySelector<HTMLElement>(`[name="${bad[0]}"]`)?.focus()
       return
     }
+    setInvalid([])
     setStatus({ kind: 'sending' })
     try {
       const [result] = await Promise.all([submitLead(lead), wait(FLIGHT_MS)])
@@ -54,6 +68,15 @@ export default function ContactGrid() {
   }
 
   const busy = status.kind === 'sending'
+
+  // A marked field clears as soon as it passes; nothing new is marked mid-typing.
+  const onFormChange = (e: FormEvent<HTMLFormElement>) => {
+    if (invalid.length === 0) return
+    const stillBad = invalidFields(new FormData(e.currentTarget))
+    setInvalid((cur) => cur.filter((f) => stillBad.includes(f)))
+  }
+  const fieldState = (name: LeadField) =>
+    invalid.includes(name) ? { 'aria-invalid': true, 'aria-describedby': ERROR_ID } : {}
 
   return (
     <section className="pgrid cgrid" aria-labelledby="contact-title">
@@ -140,7 +163,7 @@ export default function ContactGrid() {
               </button>
             </div>
           ) : (
-            <form className={`cgrid__form${busy ? ' is-sending' : ''}`} onSubmit={onSubmit} noValidate>
+            <form className={`cgrid__form${busy ? ' is-sending' : ''}`} onSubmit={onSubmit} onChange={onFormChange} noValidate>
               {/* Honeypot. Hidden from people and assistive tech; a script that
                   fills every field trips it and the backend can drop the
                   post. autoComplete off so a browser never fills it either. */}
@@ -155,17 +178,17 @@ export default function ContactGrid() {
               <div className="cgrid__row">
                 <label className="cgrid__field">
                   <span className="cgrid__label">First name</span>
-                  <input type="text" name="firstName" autoComplete="given-name" required maxLength={MAX_NAME} placeholder="First name" />
+                  <input type="text" name="firstName" autoComplete="given-name" required maxLength={MAX_NAME} placeholder="First name" {...fieldState('firstName')} />
                 </label>
                 <label className="cgrid__field">
                   <span className="cgrid__label">Last name</span>
-                  <input type="text" name="lastName" autoComplete="family-name" required maxLength={MAX_NAME} placeholder="Last name" />
+                  <input type="text" name="lastName" autoComplete="family-name" required maxLength={MAX_NAME} placeholder="Last name" {...fieldState('lastName')} />
                 </label>
               </div>
 
               <label className="cgrid__field">
                 <span className="cgrid__label">Email</span>
-                <input type="email" name="email" autoComplete="email" required maxLength={MAX_EMAIL} placeholder="you@yourbusiness.com" />
+                <input type="email" name="email" autoComplete="email" required maxLength={MAX_EMAIL} placeholder="you@yourbusiness.com" {...fieldState('email')} />
               </label>
 
               <label className="cgrid__field cgrid__field--grow">
@@ -175,6 +198,7 @@ export default function ContactGrid() {
                   required
                   maxLength={MAX_MESSAGE}
                   placeholder="What do you need help with? What are you working with today?"
+                  {...fieldState('message')}
                 />
               </label>
 
@@ -192,7 +216,7 @@ export default function ContactGrid() {
                   <ArrowUpRight className="cgrid__submit-arrow" size={15} weight="bold" aria-hidden="true" />
                 </button>
                 {status.kind === 'error' ? (
-                  <span className="cgrid__status" role="alert">
+                  <span className="cgrid__status" id={ERROR_ID} role="alert">
                     <WarningCircle size={16} weight="fill" aria-hidden="true" />
                     {status.note}
                   </span>

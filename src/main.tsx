@@ -1,17 +1,21 @@
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import App from './App'
 import Home from '@/components/Home'
 import NotFound from '@/components/NotFound'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import RouteMeta from '@/components/RouteMeta'
 import { restorePerfTier } from '@/lib/perf'
 import { restorePrefs } from '@/lib/a11y'
 
 // Every route but Home is its own chunk: the first visit only pays for Home.
 const ProjectsView = lazy(() => import('@/views/ProjectsView'))
 const ServicesView = lazy(() => import('@/views/ServicesView'))
-const ShowcaseView = lazy(() => import('@/views/ShowcaseView'))
-const TestimonialsGrid = lazy(() => import('@/components/TestimonialsGrid'))
+// Template content, hidden until it is real. To bring a page back, restore its
+// line here and its <Route> below, and add it to public/sitemap.xml and RouteMeta.
+// const ShowcaseView = lazy(() => import('@/views/ShowcaseView'))
+// const TestimonialsGrid = lazy(() => import('@/components/TestimonialsGrid'))
 const AboutGrid = lazy(() => import('@/components/AboutGrid'))
 const ContactGrid = lazy(() => import('@/components/ContactGrid'))
 const Privacy = lazy(() => import('@/components/Privacy'))
@@ -58,25 +62,30 @@ if (!container) throw new Error('Root element #root not found')
 
 createRoot(container).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        {/* The shell owns the rail, the shader and the intro; each child
-            renders into its one scrolling panel. */}
-        <Route element={<App />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<ProjectsView />} />
-          <Route path="/services" element={<ServicesView />} />
-          <Route path="/showcase" element={<ShowcaseView />} />
-          <Route path="/testimonials" element={<TestimonialsGrid />} />
-          <Route path="/about" element={<AboutGrid />} />
-          <Route path="/contact" element={<ContactGrid />} />
-        </Route>
-        {/* Standalone pages: their own layout, no rail, document scroll. */}
-        <Route path="/privacy" element={<Suspense fallback={null}><Privacy /></Suspense>} />
-        <Route path="/terms" element={<Suspense fallback={null}><ToS /></Suspense>} />
-        <Route path="/thank-you" element={<Suspense fallback={null}><ThankYou /></Suspense>} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <RouteMeta />
+        <Routes>
+          {/* The shell owns the rail, the shader and the intro; each child
+              renders into its one scrolling panel. */}
+          <Route element={<App />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<ProjectsView />} />
+            <Route path="/services" element={<ServicesView />} />
+            {/* <Route path="/showcase" element={<ShowcaseView />} /> */}
+            {/* <Route path="/testimonials" element={<TestimonialsGrid />} /> */}
+            <Route path="/showcase" element={<Navigate to="/projects" replace />} />
+            <Route path="/testimonials" element={<Navigate to="/projects" replace />} />
+            <Route path="/about" element={<AboutGrid />} />
+            <Route path="/contact" element={<ContactGrid />} />
+          </Route>
+          {/* Standalone pages: their own layout, no rail, document scroll. */}
+          <Route path="/privacy" element={<Suspense fallback={null}><Privacy /></Suspense>} />
+          <Route path="/terms" element={<Suspense fallback={null}><ToS /></Suspense>} />
+          <Route path="/thank-you" element={<Suspense fallback={null}><ThankYou /></Suspense>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 )

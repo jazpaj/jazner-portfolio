@@ -48,7 +48,9 @@ export const profile: Profile = {
   firstName: 'Jazner',
   handle: '@jaznerpajarin',
   role: 'Automation & AI Specialist',
-  avatarSrc: '/images/jazner.jpg',
+  // A 480px copy for the small placements (preloaded in index.html, keep in
+  // step). About shows hero.portraitSrc, the full-size original, at up to 915px.
+  avatarSrc: '/images/jazner-480.jpg',
   verifiedLabel: 'Automation & AI Specialist',
   email: 'jazpajarin08@gmail.com',
   location: 'Remote, worldwide',

@@ -2474,6 +2474,8 @@ img.about__stat-badge {
   overflow: hidden;
   isolation: isolate;
 }
+/* No WebGL: nothing to draw. Every site is still a card below the drum. */
+.sites__barrel:has(.funnels__barrel[data-failed='true']) { display: none; }
 /* Soft warm halo behind the drum + a grounding shadow under it, so the spiral
    reads as a lit object floating on the cream rather than a flat canvas. */
 .funnels__barrel::before {
@@ -2514,7 +2516,7 @@ img.about__stat-badge {
   pointer-events: none;
   transform: translate(-50%, -135%);
   background: var(--orange);
-  color: #ffffff;
+  color: #05070C;
   border-radius: 9px;
   padding: 6px 11px;
   opacity: 0;
@@ -5295,6 +5297,17 @@ img.about__stat-badge {
   border-radius: 2px;
 }
 
+/* These rules were written for the light card, in fixed navy ink. --navy-ink
+   stays near-black in the dark theme (it is a dark surface colour there), so
+   re-pin it here and lift the rest onto the theme tokens. */
+[data-theme='dark'] .legal-page { --navy-ink: var(--navy); }
+[data-theme='dark'] .legal-page__body p,
+[data-theme='dark'] .legal-page__body ul { color: rgba(237, 240, 246, 0.78); }
+[data-theme='dark'] .legal-page__card { border-color: var(--line); }
+[data-theme='dark'] .legal-page__body h2 { border-top-color: var(--line); }
+[data-theme='dark'] .legal-page__back { border-color: var(--line-strong); }
+[data-theme='dark'] .legal-page__back:hover { background: var(--tint); }
+
 @media (max-width: 540px) {
   .legal-page { padding: 24px 16px 48px; }
   .legal-page__card { padding: 28px 22px; border-radius: 14px; }
@@ -5819,8 +5832,14 @@ img.about__stat-badge {
   width: max-content;
   animation: marquee 64s linear infinite;
 }
-.wfs__strip:hover .wfs__track,
-.wfs__strip:focus-within .wfs__track {
+/* The strip is the only way to reach the frames that are off screen, so nothing
+   may hold it still after the pointer has gone: a mouse click leaves focus on the
+   frame (hence focus-visible, not focus-within), and a tap leaves a sticky :hover
+   on touch screens (hence the hover query). */
+@media (hover: hover) {
+  .wfs__strip:hover .wfs__track { animation-play-state: paused; }
+}
+.wfs__strip:has(.wfs__frame:focus-visible) .wfs__track {
   animation-play-state: paused;
 }
 
@@ -5887,7 +5906,8 @@ img.about__stat-badge {
 .wfs__modal {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  /* Over the Projects dialog that hosts the strip (8000). */
+  z-index: 8500;
   display: flex;
   align-items: center;
   justify-content: center;

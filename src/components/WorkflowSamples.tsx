@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from '@/components/slab'
 import { SAMPLES, thumbOf, type Sample } from '@/data/workflows'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useScrollLock } from '@/hooks/useScrollLock'
 
 /**
  * WorkflowSamples
@@ -30,6 +32,9 @@ export default function WorkflowSamples() {
   const [zoomed, setZoomed] = useState(false)
   const lastTriggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement | null>(null)
+  const dialogRef = useRef<HTMLDivElement | null>(null)
+  useFocusTrap(dialogRef, !!active)
+  useScrollLock(!!active)
 
   const open = useCallback((s: Sample, trigger: HTMLElement | null) => {
     lastTriggerRef.current = trigger ?? (document.activeElement as HTMLElement | null)
@@ -44,15 +49,16 @@ export default function WorkflowSamples() {
 
   useEffect(() => {
     if (!active) return
+    // Capture + stop: Escape closes this popup, not the Projects dialog under it.
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
+      if (e.key !== 'Escape') return
+      e.stopPropagation()
+      close()
     }
-    document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKey, true)
     requestAnimationFrame(() => closeRef.current?.focus())
     return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey, true)
     }
   }, [active, close])
 
@@ -62,7 +68,15 @@ export default function WorkflowSamples() {
         Real GoHighLevel workflows I have built. Click any one to see it full size.
       </p>
 
-      <div className="wfs__strip">
+      <div
+        className="wfs__strip"
+        onPointerLeave={(e) => {
+          // Escape hands focus back to the frame with a ring, which holds the
+          // strip still. A mouse moving off means nobody is tabbing through it.
+          const focused = document.activeElement
+          if (e.pointerType === 'mouse' && focused instanceof HTMLElement && e.currentTarget.contains(focused)) focused.blur()
+        }}
+      >
         <div className="wfs__track">
           {doubled.map((s, i) => {
             const clone = i >= SAMPLES.length
@@ -97,6 +111,7 @@ export default function WorkflowSamples() {
       {active &&
         createPortal(
           <div
+            ref={dialogRef}
             className="wfs__modal"
             role="dialog"
             aria-modal="true"

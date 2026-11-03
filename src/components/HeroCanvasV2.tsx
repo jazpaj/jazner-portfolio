@@ -156,7 +156,14 @@ export default function HeroCanvasV2() {
     // antialias off: this is a single fullscreen quad - the only "edges" are
     // the contour lines, which the shader already smooths with fwidth(), so
     // MSAA buys nothing and just costs a multisample buffer.
-    const renderer = new THREE.WebGLRenderer({ antialias: false })
+    // No WebGL (disabled, blocklisted GPU): the constructor throws. The canvas is
+    // only decoration, so the page stays on the .hero-canvas background colour.
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: false })
+    } catch {
+      return
+    }
     renderer.setSize(window.innerWidth, window.innerHeight)
     // Render ABOVE 1:1 so higher-DPI displays get crisp contour lines. The
     // 0.5 default looked pixelated; 1.0 fixed the cream theme. 1.5 was tried

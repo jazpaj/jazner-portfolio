@@ -18,9 +18,7 @@ html, body {
 }
 
 html {
-  /* Native smooth-scroll for anchor clicks. Touch devices skip Lenis
-     (see useLenis.ts) and fall back to this. Desktop's Lenis-driven
-     handler intercepts the click before this matters. */
+  /* Native smooth-scroll for anchor clicks. */
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
 }

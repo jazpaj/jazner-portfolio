@@ -220,6 +220,8 @@
 :root[data-a11y-text='xl'] .shell__panel > * { zoom: 1.25; }
 :root[data-a11y-text] .shell__panel[data-fixed='true'] { overflow-y: auto; }
 :root[data-a11y-text] .home__showcase > .bento { height: auto; }
+/* Zoomed, the one-line headline no longer fits beside the CTA: let it wrap. */
+:root[data-a11y-text] .home__line { white-space: normal; }
 
 /* High contrast: the muted grey climbs to near-ink and hairlines darken. */
 :root[data-a11y-contrast='true'] {
@@ -241,6 +243,9 @@
   transition: none !important;
   scroll-behavior: auto !important;
 }
+/* The drift was the only way to the strip's off-screen frames: with it held they
+   scroll by hand, the same as under prefers-reduced-motion. */
+:root[data-a11y-motion='true'] .wfs__strip { overflow-x: auto; }
 
 /* Underline links: real links inside the page only, not the rail tabs or
    the two widgets, which already read as controls. */

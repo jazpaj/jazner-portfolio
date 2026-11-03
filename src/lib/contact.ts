@@ -46,14 +46,33 @@ export type Lead = {
 
 export type SubmitResult = { via: 'webhook' } | { via: 'mailto' }
 
+export type LeadField = 'firstName' | 'lastName' | 'email' | 'message'
+
+function cleanFields(data: FormData): Record<LeadField, string> {
+  return {
+    firstName: sanitize(String(data.get('firstName') ?? '').trim()).slice(0, MAX_NAME),
+    lastName: sanitize(String(data.get('lastName') ?? '').trim()).slice(0, MAX_NAME),
+    email: sanitize(String(data.get('email') ?? '').trim()).slice(0, MAX_EMAIL),
+    message: sanitize(String(data.get('message') ?? '').trim(), true).slice(0, MAX_MESSAGE),
+  }
+}
+
+/** The fields readLead would reject, in form order. */
+export function invalidFields(data: FormData): LeadField[] {
+  const f = cleanFields(data)
+  const bad: LeadField[] = []
+  if (!f.firstName) bad.push('firstName')
+  if (!f.lastName) bad.push('lastName')
+  if (!f.email || !EMAIL_RE.test(f.email)) bad.push('email')
+  if (!f.message) bad.push('message')
+  return bad
+}
+
 /** Read, trim, cap and sanitise the four fields. Returns null if a required
  *  field is missing or the email does not look like one. */
 export function readLead(data: FormData): Lead | null {
-  const firstName = sanitize(String(data.get('firstName') ?? '').trim()).slice(0, MAX_NAME)
-  const lastName = sanitize(String(data.get('lastName') ?? '').trim()).slice(0, MAX_NAME)
-  const email = sanitize(String(data.get('email') ?? '').trim()).slice(0, MAX_EMAIL)
-  const message = sanitize(String(data.get('message') ?? '').trim(), true).slice(0, MAX_MESSAGE)
-  if (!firstName || !lastName || !email || !message || !EMAIL_RE.test(email)) return null
+  if (invalidFields(data).length > 0) return null
+  const { firstName, lastName, email, message } = cleanFields(data)
   const website = String(data.get('website') ?? '')
   return { firstName, lastName, email, message, website }
 }

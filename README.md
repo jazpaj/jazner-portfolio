@@ -2,7 +2,7 @@
 
 A personal portfolio with a fixed profile rail, an animated contour background, a bento home screen, a 3D page carousel, and a separate app-style layout for phones. Every piece of content is a placeholder. You swap in your own.
 
-Stack: Vite 6, React 19, TypeScript, plain CSS custom properties, Three.js, GSAP, Lenis, React Router 7, Phosphor icons, Poppins.
+Stack: Vite 6, React 19, TypeScript, plain CSS custom properties, Three.js, GSAP, React Router 7, Phosphor icons, Poppins.
 
 ## What it looks like
 

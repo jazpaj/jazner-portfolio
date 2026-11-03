@@ -6,8 +6,8 @@ import Rail from '@/components/Rail'
 import IntroOverlay from '@/components/IntroOverlay'
 import CursorRing from '@/components/CursorRing'
 import AccessMenu from '@/components/AccessMenu'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { motionReduced } from '@/lib/a11y'
-import { useLenis, SCROLLER_ID } from '@/hooks/useLenis'
 import { useIsPhone } from '@/hooks/useMediaQuery'
 import { getPerfTier, watchFrameHealth, PERF_TIER_EVENT } from '@/lib/perf'
 
@@ -17,6 +17,8 @@ import { getPerfTier, watchFrameHealth, PERF_TIER_EVENT } from '@/lib/perf'
 // handles the visual baseline. PageSpeed showed Three.js had 76.6 KiB
 // of unused JS; not loading it at all on mobile is the cleaner fix.
 const HeroCanvas = lazy(() => import('@/components/HeroCanvasV2'))
+
+const SCROLLER_ID = 'main-content'
 
 /**
  * The shell. It owns everything that outlives a route change: the contour
@@ -28,8 +30,6 @@ const HeroCanvas = lazy(() => import('@/components/HeroCanvasV2'))
  * Testimonials, About and Contact are built to the same budget and join it.
  */
 export default function App() {
-  useLenis()
-
   const { pathname } = useLocation()
   const FIXED_ROUTES = ['/', '/projects', '/testimonials', '/about', '/contact']
   const isFixed = FIXED_ROUTES.includes(pathname)
@@ -98,9 +98,11 @@ export default function App() {
       <CursorRing />
       <a href={`#${SCROLLER_ID}`} className="skip-link">Skip to main content</a>
       {shouldLoadCanvas && perfTier !== 'low' && (
-        <Suspense fallback={null}>
-          <HeroCanvas />
-        </Suspense>
+        <ErrorBoundary quiet>
+          <Suspense fallback={null}>
+            <HeroCanvas />
+          </Suspense>
+        </ErrorBoundary>
       )}
       {phone && pathname !== '/' && <QuickMenu className="qmenu--float" />}
       <div className="shell">
@@ -111,9 +113,11 @@ export default function App() {
           className="shell__panel"
           data-fixed={isFixed ? 'true' : 'false'}
         >
-          <Suspense fallback={null}>
-            <Outlet />
-          </Suspense>
+          <ErrorBoundary resetKey={pathname}>
+            <Suspense fallback={null}>
+              <Outlet />
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
       {phone && <TabBar />}

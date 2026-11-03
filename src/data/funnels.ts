@@ -23,6 +23,9 @@ export type Funnel = {
  * `node scripts/make-thumbs.mjs` to render its thumbnails.
  */
 
+/** The 400px copy from public/home: for anything shown at thumbnail size. */
+export const smallThumbSrc = (f: Funnel) => `/home/${f.dir ?? 'funnels'}-${f.file.replace('.html', '.jpeg')}`
+
 const FUNNEL_DESC: Record<'Lead Capture' | 'Booking' | 'Checkout', string> = {
   'Lead Capture': 'An opt-in page that captures the lead and sends it straight into the CRM and follow-up.',
   Booking: 'A booking page wired to the calendar, with confirmations and reminders after.',

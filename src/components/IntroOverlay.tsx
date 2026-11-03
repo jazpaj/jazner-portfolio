@@ -55,10 +55,28 @@ const STEPS = [
   { label: 'Call booked', trigger: false, d: 'M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12M16 3v4M8 3v4M4 11h16M9 16l2 2l4 -4' },
 ] as const
 
+const PLAYED_KEY = 'intro-played'
+
+/**
+ * The intro plays once per browser session, recorded as it starts. Storage that
+ * is blocked cannot remember that, so it counts as played: no intro beats the
+ * same intro on every reload.
+ */
+function claimIntro(): boolean {
+  try {
+    if (sessionStorage.getItem(PLAYED_KEY)) return false
+    sessionStorage.setItem(PLAYED_KEY, '1')
+    return true
+  } catch {
+    return false
+  }
+}
+
 const shouldRun =
   typeof window !== 'undefined' &&
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-  window.location.pathname === '/'
+  window.location.pathname === '/' &&
+  claimIntro()
 
 // Two classes, because the page and the headline are handed back at different
 // moments: `is-intro` holds the whole page, `is-intro-head` holds only the real

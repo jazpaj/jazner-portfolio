@@ -5,7 +5,7 @@ import WorkflowSamples from './WorkflowSamples'
 import AIStackGrid from './AIStackGrid'
 import { AppsSection } from './Projects'
 import { useFunnelModal } from './FunnelModal'
-import { ghlSites, vibeSites, liveSites, type Funnel } from '@/data/funnels'
+import { ghlSites, vibeSites, liveSites, smallThumbSrc, type Funnel } from '@/data/funnels'
 
 const FunnelBarrel = lazy(() => import('./FunnelBarrel'))
 
@@ -39,7 +39,9 @@ function SectionWindow({ label, children }: { label: string; children: ReactNode
           <span className="ppanel__url-host">{label}</span>
         </span>
       </div>
-      <div className="ppanel__scroll">{children}</div>
+      {/* A tab stop of its own: the dialog traps Tab, and a window with no links
+          inside would otherwise leave no way to scroll it from the keyboard. */}
+      <div className="ppanel__scroll" tabIndex={0} role="region" aria-label={label}>{children}</div>
     </div>
   )
 }
@@ -53,7 +55,7 @@ function SiteCard({ site, onOpen }: { site: Funnel; onOpen: (f: Funnel, t?: HTML
   return (
     <li className="sitecard">
       <button type="button" className="sitecard__shot" onClick={(e) => onOpen(site, e.currentTarget)} aria-label={`Preview ${site.label}`}>
-        <img src={`/sites/thumbs/${site.file.replace('.html', '.jpeg')}`} alt="" loading="lazy" decoding="async" />
+        <img src={smallThumbSrc(site)} alt="" loading="lazy" decoding="async" />
         <span className="sitecard__peek" aria-hidden="true">
           <Eye size={16} weight="bold" />
           Preview

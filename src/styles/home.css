@@ -51,6 +51,11 @@
 
 @media (min-width: 1100px) {
   .home__line { white-space: nowrap; }
+  /* The line is 16.96em wide and shares the panel with the 141px CTA and the
+     gap. The second term is what is left, so the CTA stays inside the panel's
+     padding; from about 1620px up there is room for the 3.5vw size.
+     .boot__title carries the same size (boot.css: change one, change both). */
+  .home__title { font-size: clamp(30px, min(3.5vw, 5.2vw - 27.5px), 72px); }
 }
 
 .home__cta {

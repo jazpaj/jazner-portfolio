@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, ArrowUpRight } from '@/components/slab'
 import type { Funnel } from '@/data/funnels'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { useScrollLock } from '@/hooks/useScrollLock'
 
 /**
  * The in-page funnel preview: a browser-chrome dialog that iframes the real
@@ -21,6 +23,9 @@ export function useFunnelModal() {
   // dumping keyboard users at the top of the document.
   const lastTriggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement | null>(null)
+  const dialogRef = useRef<HTMLDivElement | null>(null)
+  useFocusTrap(dialogRef, !!funnel)
+  useScrollLock(!!funnel)
 
   const openFull = useCallback((next: Funnel, trigger?: HTMLElement | null) => {
     lastTriggerRef.current = trigger ?? (document.activeElement as HTMLElement | null)
@@ -32,19 +37,19 @@ export function useFunnelModal() {
     requestAnimationFrame(() => lastTriggerRef.current?.focus())
   }, [])
 
-  // Escape to dismiss, scroll locked while open, focus moved into the dialog.
+  // Escape to dismiss, focus moved into the dialog.
   useEffect(() => {
     if (!funnel) return
+    // Capture + stop: Escape closes this preview, not the Projects dialog under it.
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
+      if (e.key !== 'Escape') return
+      e.stopPropagation()
+      close()
     }
-    document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKey, true)
     requestAnimationFrame(() => closeRef.current?.focus())
     return () => {
-      document.removeEventListener('keydown', onKey)
-      // Always clear to default - never restore a possibly stale 'hidden'.
-      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey, true)
     }
   }, [funnel, close])
 
@@ -52,6 +57,7 @@ export function useFunnelModal() {
     funnel &&
     createPortal(
       <div
+        ref={dialogRef}
         className="funnels__modal"
         role="dialog"
         aria-modal="true"

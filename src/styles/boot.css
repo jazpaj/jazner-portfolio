@@ -45,6 +45,9 @@
   line-height: 1.06;
   color: var(--navy);
 }
+@media (min-width: 1100px) {
+  .boot__title { font-size: clamp(30px, min(3.5vw, 5.2vw - 27.5px), 72px); }
+}
 
 /* The mask. Padding opens headroom for ascenders and the negative margin gives
    the space straight back, so the glyphs sit exactly where they sit in the
