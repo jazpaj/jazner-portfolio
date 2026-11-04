@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect, useLayoutEffect, useRef } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom'
 import TabBar from '@/components/TabBar'
 import QuickMenu from '@/components/QuickMenu'
 import Rail from '@/components/Rail'
@@ -45,6 +45,20 @@ export default function App() {
   useEffect(() => {
     panelRef.current?.scrollTo({ top: 0, behavior: 'auto' })
   }, [pathname])
+
+  // Below 1100px the document is the scroller instead, and it keeps its offset
+  // across a route change. Back and Forward (POP) are left to the browser, which
+  // restores the offset; anything else is a new page and opens at the top. The
+  // ref holds a same-page tap or the skip link's hash change off this: they alter
+  // the navigation type but not the page. 'instant', or the smooth scrolling set
+  // on html would animate it. Layout effect: before the new page paints.
+  const navigationType = useNavigationType()
+  const lastPath = useRef<string | null>(null)
+  useLayoutEffect(() => {
+    if (pathname === lastPath.current) return
+    lastPath.current = pathname
+    if (navigationType !== 'POP') window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname, navigationType])
 
   // From the first route change on, a page that mounts rises into place
   // (mobile-pass.css). Not on the first load: the intro owns that arrival.
