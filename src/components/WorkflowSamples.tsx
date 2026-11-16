@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from '@/components/slab'
 import { SAMPLES, thumbOf, type Sample } from '@/data/workflows'
@@ -8,14 +8,9 @@ import { useScrollLock } from '@/hooks/useScrollLock'
 /**
  * WorkflowSamples
  *
- * A horizontally scrolling marquee of project screenshots. The strip loops
- * seamlessly; clicking any frame opens the full image in a faux macOS window
- * over the page. Add more workflows to SAMPLES.
- *
- * Marquee: the list is duplicated so the CSS keyframe can translate -50% and
- * land the reset on a seamless seam. The track pauses on hover/focus so frames
- * are easy to click. The duplicate half is aria-hidden + removed from the tab
- * order so screen readers and keyboard users see each frame once.
+ * A still grid of project screenshots, each a button in a faux macOS frame
+ * tagged with the platform it runs on. Clicking any frame opens the full image
+ * in a faux macOS window over the page. Add more workflows to SAMPLES.
  *
  * Modal: createPortal to body (escapes any transformed ancestor), Escape +
  * backdrop close, body scroll lock, focus moved into the dialog and returned to
@@ -25,8 +20,6 @@ import { useScrollLock } from '@/hooks/useScrollLock'
 const srcOf = (s: Sample) => `/workflows/full/${s.file}.webp`
 
 export default function WorkflowSamples() {
-  const doubled = useMemo(() => [...SAMPLES, ...SAMPLES], [])
-
   const [active, setActive] = useState<Sample | null>(null)
   // Big workflows are unreadable fitted to the window; a click shows them 1:1.
   const [zoomed, setZoomed] = useState(false)
@@ -65,48 +58,31 @@ export default function WorkflowSamples() {
   return (
     <section className="wfs" id="workflow-samples" aria-labelledby="wfs-heading" data-reveal>
       <p className="wfs__caption" id="wfs-heading">
-        Real GoHighLevel workflows I have built. Click any one to see it full size.
+        Real GoHighLevel workflows and a Zapier zap I have built. Click any one to see it full size.
       </p>
 
-      <div
-        className="wfs__strip"
-        onPointerLeave={(e) => {
-          // Escape hands focus back to the frame with a ring, which holds the
-          // strip still. A mouse moving off means nobody is tabbing through it.
-          const focused = document.activeElement
-          if (e.pointerType === 'mouse' && focused instanceof HTMLElement && e.currentTarget.contains(focused)) focused.blur()
-        }}
-      >
-        <div className="wfs__track">
-          {doubled.map((s, i) => {
-            const clone = i >= SAMPLES.length
-            return (
-              <button
-                key={`${s.file}-${i}`}
-                type="button"
-                className="wfs__frame"
-                onClick={(e) => open(s, e.currentTarget)}
-                aria-hidden={clone || undefined}
-                tabIndex={clone ? -1 : undefined}
-                aria-label={clone ? undefined : `Open ${s.label} screenshot`}
-              >
-                <span className="wfs__frame-bar" aria-hidden="true">
-                  <span className="wfs__dot wfs__dot--r" />
-                  <span className="wfs__dot wfs__dot--y" />
-                  <span className="wfs__dot wfs__dot--g" />
-                </span>
-                <img
-                  className="wfs__img"
-                  src={thumbOf(s)}
-                  alt={clone ? '' : `${s.label} workflow`}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      <ul className="wfs__grid">
+        {SAMPLES.map((s) => (
+          <li key={s.file} className="wfs__cell">
+            <button
+              type="button"
+              className="wfs__frame"
+              onClick={(e) => open(s, e.currentTarget)}
+              aria-haspopup="dialog"
+              aria-label={`Open ${s.label} screenshot (${s.platform})`}
+            >
+              <span className="wfs__frame-bar" aria-hidden="true">
+                <span className="wfs__dot wfs__dot--r" />
+                <span className="wfs__dot wfs__dot--y" />
+                <span className="wfs__dot wfs__dot--g" />
+                <span className="wfs__frame-title">{s.label}</span>
+                <PlatformTag platform={s.platform} />
+              </span>
+              <img className="wfs__img" src={thumbOf(s)} alt="" loading="lazy" decoding="async" />
+            </button>
+          </li>
+        ))}
+      </ul>
 
       {active &&
         createPortal(
@@ -138,7 +114,10 @@ export default function WorkflowSamples() {
                   <X weight="bold" size={18} aria-hidden="true" />
                 </button>
               </div>
-              <p className="wfs__desc">{active.desc}</p>
+              <p className="wfs__desc">
+                <PlatformTag platform={active.platform} />
+                {active.desc}
+              </p>
               <div className={`wfs__imgwrap${zoomed ? ' is-zoomed' : ''}`}>
                 <button
                   type="button"
@@ -155,5 +134,13 @@ export default function WorkflowSamples() {
           document.body,
         )}
     </section>
+  )
+}
+
+function PlatformTag({ platform }: { platform: Sample['platform'] }) {
+  return (
+    <span className="wfs__tag" data-platform={platform}>
+      {platform}
+    </span>
   )
 }

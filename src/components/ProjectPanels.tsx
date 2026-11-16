@@ -15,7 +15,7 @@ const FunnelBarrel = lazy(() => import('./FunnelBarrel'))
  * dialog to click into.
  */
 
-/** Only the strip of macOS windows, drifting on the backdrop. No window. */
+/** Only the grid of macOS-framed screenshots, on the backdrop. No window. */
 export function AutomationsPanel() {
   return (
     <div className="ppanel ppanel--strip">

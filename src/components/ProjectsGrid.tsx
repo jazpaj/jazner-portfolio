@@ -168,7 +168,7 @@ function AppsPreview() {
 }
 
 const PROJECTS: Project[] = [
-  { id: 'workflows', cat: 'work', index: '01', title: 'Automation workflows', desc: '5 real GoHighLevel workflows: Voice AI call routing, missed-call text-back and pipeline syncs.', Icon: FlowIcon, logos: [GHL], eyebrow: 'GoHighLevel workflows', Section: AutomationsPanel, span: 2, Preview: WorkflowsPreview },
+  { id: 'workflows', cat: 'work', index: '01', title: 'Automation workflows', desc: '5 GoHighLevel workflows and 1 Zapier zap: Voice AI call routing, missed-call text-back, pipeline syncs and a mortgage loan-status hand-off.', Icon: FlowIcon, logos: [GHL, ZAPIER], eyebrow: 'GoHighLevel and Zapier automations', Section: AutomationsPanel, span: 2, Preview: WorkflowsPreview },
   { id: 'plan', draft: true, cat: 'work', index: '02', title: 'Sample build plan', desc: 'The kind of plan I write before a build: the process mapped, the gaps found, the fix laid out.', Icon: PlanIcon, logos: [GHL], eyebrow: 'Sample document', Section: PlanPanel, Preview: PlanPreview },
   { id: 'funnels', cat: 'sites', index: '06', title: "Websites I've built", desc: '9 live client sites: 6 built in GoHighLevel, 3 vibe-coded. Open to browse them.', Icon: GlobeIcon, logos: [GHL], eyebrow: 'Live websites', Section: BarrelPanel, Preview: FunnelsPreview },
   { id: 'ai', cat: 'ai', index: '07', title: 'Systems I build', desc: 'AI agents, workflows and integrations, grouped by what they do.', Icon: SparkIcon, logos: [CLAUDE_CODE, OPENAI, GHL], eyebrow: 'Systems', Section: AIWindow, Preview: AIPreview },

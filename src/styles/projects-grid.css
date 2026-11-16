@@ -310,13 +310,15 @@
 /* ---------- Panels: the work, directly ---------- */
 .ppanel { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; min-width: 0; }
 
-/* Automations: only the strip, floating on the backdrop, full width. */
-.ppanel--strip { justify-content: center; }
+/* Automations: only the grid, floating on the backdrop. When it is taller
+   than the stage (phones, short windows) it scrolls down, never sideways. */
+.ppanel--strip { overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
 .ppanel--strip .wfs__caption { display: none; }
-.ppanel--strip .wfs { padding: 0; width: 100%; }
+/* margin auto centres the grid when it fits and pins it to the top when it
+   does not, so the first row is never cut off. 6px leaves room for the lift
+   and focus ring. */
+.ppanel--strip .wfs { padding: 6px; width: 100%; max-width: 1240px; margin: auto; }
 .ppanel--strip [data-reveal] { opacity: 1 !important; transform: none !important; }
-.ppanel--strip .wfs__frame { width: clamp(520px, 46vw, 820px); }
-.ppanel--strip .wfs__strip { mask-image: none; -webkit-mask-image: none; }
 
 /* The barrel: bare on the backdrop, filling the stage. */
 .ppanel--barrel { justify-content: center; }

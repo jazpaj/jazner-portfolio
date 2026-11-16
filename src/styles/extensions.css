@@ -5799,14 +5799,12 @@ img.about__stat-badge {
 }
 
 /* ==========================================================================
-   WORKFLOW SAMPLES - marquee of real build screenshots + macOS image modal
-   Sits under Autopilot. The strip loops via the shared `marquee` keyframe
-   (translate -50% over a duplicated list); a click opens the full image in a
-   faux macOS window. Strip pauses on hover/focus so frames are clickable.
+   WORKFLOW SAMPLES - still grid of real build screenshots + macOS image modal
+   Each frame is a button tagged with its platform; a click opens the full
+   image in a faux macOS window.
    ========================================================================== */
 .wfs {
   padding: clamp(4px, 1.5vh, 20px) 0 clamp(48px, 7vh, 90px);
-  overflow: hidden;
 }
 .wfs__caption {
   margin: 0 0 clamp(22px, 3vw, 34px);
@@ -5818,30 +5816,21 @@ img.about__stat-badge {
   color: var(--muted);
 }
 
-.wfs__strip {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  /* feather the left/right edges so frames fade in instead of hard-cutting */
-  -webkit-mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-          mask: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+.wfs__grid {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  --wfs-gap: clamp(14px, 1.6vw, 24px);
+  display: grid;
+  /* At most three across (a column is never under a third of the row), down
+     to one on a phone (never over 100%), so it never runs wider than its box. */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(280px, (100% - 2 * var(--wfs-gap)) / 3)), 1fr)
+  );
+  gap: var(--wfs-gap);
 }
-.wfs__track {
-  display: flex;
-  gap: clamp(20px, 2vw, 30px);
-  width: max-content;
-  animation: marquee 64s linear infinite;
-}
-/* The strip is the only way to reach the frames that are off screen, so nothing
-   may hold it still after the pointer has gone: a mouse click leaves focus on the
-   frame (hence focus-visible, not focus-within), and a tap leaves a sticky :hover
-   on touch screens (hence the hover query). */
-@media (hover: hover) {
-  .wfs__strip:hover .wfs__track { animation-play-state: paused; }
-}
-.wfs__strip:has(.wfs__frame:focus-visible) .wfs__track {
-  animation-play-state: paused;
-}
+.wfs__cell { display: flex; min-width: 0; }
 
 .wfs__frame {
   /* button reset */
@@ -5850,8 +5839,12 @@ img.about__stat-badge {
   margin: 0;
   padding: 0;
   cursor: pointer;
-  flex: 0 0 auto;
-  width: clamp(420px, 40vw, 620px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  font: inherit;
   border-radius: 16px;
   overflow: hidden;
   background: var(--white);
@@ -5884,6 +5877,40 @@ img.about__stat-badge {
   background: linear-gradient(180deg, #f4f4ed, #e9e9e0);
   border-bottom: 1px solid var(--divider);
 }
+.wfs__frame-bar .wfs__dot { flex-shrink: 0; }
+.wfs__frame-title {
+  flex: 1;
+  min-width: 0;
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3a4256;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Which platform a build runs on. The chip carries its own fill, so it reads
+   on the light frame bar and on the popup's description line in either theme. */
+.wfs__tag {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: #0b5cad;
+  background: #e3effc;
+  border: 1px solid #b9d5f5;
+}
+.wfs__tag[data-platform='Zapier'] {
+  color: #a33200;
+  background: #fff0e8;
+  border-color: #ffc7ab;
+}
+.wfs__desc .wfs__tag { margin-right: 8px; vertical-align: 1px; }
 .wfs__dot {
   width: 9px;
   height: 9px;
@@ -5986,16 +6013,7 @@ img.about__stat-badge {
 }
 
 @media (max-width: 720px) {
-  /* frames must fit a phone: ~82vw shows one card with a peek of the next,
-     instead of a 420px+ frame that overflows and clips on both edges */
-  .wfs__frame { width: min(82vw, 440px); }
   .wfs__caption { padding: 0 24px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* no auto-scroll; let the strip be swiped/scrolled by hand instead */
-  .wfs__track { animation: none; }
-  .wfs__strip { overflow-x: auto; }
 }
 
 
