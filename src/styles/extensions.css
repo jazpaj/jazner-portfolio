@@ -5943,8 +5943,11 @@ img.about__stat-badge {
   animation: sampleplan-fade-in 220ms var(--ease-out);
 }
 .wfs__window {
-  display: flex;
-  flex-direction: column;
+  /* A grid, not a column flex: the image row then gets a definite height
+     (what the bar and description leave of 92vh), so fit view can size the
+     image to it. */
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
   max-width: min(1400px, 94vw);
   max-height: 92vh;
   background: var(--white);
@@ -6004,13 +6007,17 @@ img.about__stat-badge {
   justify-content: center;
   overflow: auto;
   background: #f0f0e8;
+  min-height: 0;
 }
 .wfs__full {
   display: block;
   max-width: 100%;
-  max-height: calc(92vh - 44px);
+  max-height: 100%;
   object-fit: contain;
 }
+/* Fit view: the button fills the image row so the image's max-height: 100%
+   resolves; zoomed, the image drops its caps and the row scrolls. */
+.wfs__imgwrap:not(.is-zoomed) .wfs__zoom { height: 100%; max-width: 100%; }
 
 @media (max-width: 720px) {
   .wfs__caption { padding: 0 24px; }

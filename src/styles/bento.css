@@ -132,7 +132,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  animation: bento-drift-up 22s linear infinite;
+  /* Speed is per shot: a reel that sets --reel-n (its shot count) keeps the
+     same drift as the original six-shot 22s however many shots it holds. */
+  animation: bento-drift-up calc(var(--reel-n, 6) * 22s / 6) linear infinite;
   animation-play-state: paused;
 }
 /* Still until pointed at: three tracks drifting at once gave the eye nothing to land on. */
@@ -405,7 +407,7 @@
     mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   }
-  .bento__reel-track { flex-direction: row; width: max-content; animation-name: bento-drift-left; animation-duration: 26s; }
+  .bento__reel-track { flex-direction: row; width: max-content; animation-name: bento-drift-left; animation-duration: calc(var(--reel-n, 6) * 26s / 6); }
   .bento__shot { width: 200px; }
 }
 @media (max-width: 639px) {

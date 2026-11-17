@@ -90,7 +90,7 @@ const AI_LEAVES = leaves(aiStack)
 function WorkflowsPreview() {
   return (
     <div className="bento__media bento__reel" aria-hidden="true">
-      <div className="bento__reel-track">
+      <div className="bento__reel-track" style={{ ['--reel-n' as string]: WF_SHOTS.length }}>
         {[...WF_SHOTS, ...WF_SHOTS].map((src, i) => (
           <span key={i} className="bento__shot">
             <img src={src} alt="" loading="lazy" decoding="async" />
