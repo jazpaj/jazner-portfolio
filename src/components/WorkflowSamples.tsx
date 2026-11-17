@@ -58,7 +58,7 @@ export default function WorkflowSamples() {
   return (
     <section className="wfs" id="workflow-samples" aria-labelledby="wfs-heading" data-reveal>
       <p className="wfs__caption" id="wfs-heading">
-        Real GoHighLevel workflows and a Zapier zap I have built. Click any one to see it full size.
+        Real GoHighLevel workflows and Zapier zaps I have built. Click any one to see it full size.
       </p>
 
       <ul className="wfs__grid">
